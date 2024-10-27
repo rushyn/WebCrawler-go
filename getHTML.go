@@ -11,7 +11,7 @@ import (
 
 
 func getHTML(rawURL string) (string, error) {
-	resp, err := http.Get(rawURL)
+	resp, err := http.Get("https://" + rawURL)
 	if err != nil {
 		return "", err
 	}

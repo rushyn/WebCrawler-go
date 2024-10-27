@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"strings"
 )
 
 
@@ -16,10 +17,12 @@ func normalizeURL(link string) (string, error) {
 	}
 	fmt.Println(u)
 
-	if u.Path[len(u.Path)-1:] == "/" {
-		u.Path = u.Path[:len(u.Path)-1]
+	if len(u.Path) > 0 {
+		if u.Path[len(u.Path)-1:] == "/" {
+			u.Path = u.Path[:len(u.Path)-1]
+		}
 	}
 	
-	return u.Host + u.Path , err
+	return strings.ToLower(u.Host + u.Path) , err
 	
 }
