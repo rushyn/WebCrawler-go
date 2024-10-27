@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strconv"
 	"sync"
 )
@@ -72,10 +73,58 @@ func main(){
 
 
 	cfg.wg.Wait()
-	i := 0
-	for key := range cfg.pages {
-		fmt.Printf("%d %s %d\n", i, key, cfg.pages[key])
-		i++
+	
+	printReport(cfg.pages, os.Args[1])
+	
+}
+
+
+type page struct{
+	link	string
+	count	int
+}
+
+func printReport(pages map[string]int, baseURL string) {
+	report := []page{}
+	for key := range pages {
+		report = append(report, page{
+			link:  key,
+			count: pages[key],
+		})
+	}
+
+
+	sort.Slice(report, func(i, j int) bool {
+		if report[i].count > report[j].count {
+			return true
+		}
+		
+		if z, err := strconv.Atoi(report[i].link); err == nil {
+			if y, err := strconv.Atoi(report[j].link); err == nil {
+				if report[i].count == report[j].count {
+					return y < z
+				}
+				return false
+			}
+			if report[i].count == report[j].count {
+				return true
+			}
+		}
+
+		if report[i].count == report[j].count {
+			return report[j].link > report[i].link
+		}
+		return false
+	})
+	
+
+
+
+	fmt.Println("=============================")
+	fmt.Printf("REPORT for %s\n", baseURL)
+	fmt.Println("=============================")
+	for _, item := range report {
+		fmt.Printf("Found %d internal links to %s \n", item.count, item.link)
 	}
 	
 }
